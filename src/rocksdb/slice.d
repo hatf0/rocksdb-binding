@@ -6,6 +6,10 @@ struct Slice {
   size_t l;
   immutable char* p;
 
+  static Slice fromChar(size_t length, const(char)* src) {
+      return Slice(length, cast(immutable(char*))src[0 .. length].idup);
+  }
+
   static Slice fromString(string source) {
     return Slice(source.length, &source.to!(immutable(char)[])[0]);
   }

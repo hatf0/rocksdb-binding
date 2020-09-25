@@ -2,26 +2,11 @@ module rocksdb.batch;
 
 import std.string : toStringz;
 
+
 import rocksdb.options,
        rocksdb.queryable,
-       rocksdb.columnfamily;
-
-extern (C) {
-  struct rocksdb_writebatch_t {};
-
-  rocksdb_writebatch_t* rocksdb_writebatch_create();
-  rocksdb_writebatch_t* rocksdb_writebatch_create_from(const char*, size_t);
-  void rocksdb_writebatch_destroy(rocksdb_writebatch_t*);
-  void rocksdb_writebatch_clear(rocksdb_writebatch_t*);
-  int rocksdb_writebatch_count(rocksdb_writebatch_t*);
-
-  void rocksdb_writebatch_put(rocksdb_writebatch_t*, const char*, size_t, const char*, size_t);
-  void rocksdb_writebatch_put_cf(rocksdb_writebatch_t*, rocksdb_column_family_handle_t*, const char*, size_t, const char*, size_t);
-
-  void rocksdb_writebatch_delete(rocksdb_writebatch_t*, const char*, size_t);
-  void rocksdb_writebatch_delete_cf(rocksdb_writebatch_t*, rocksdb_column_family_handle_t*, const char*, size_t);
-}
-
+       rocksdb.columnfamily,
+       rocksdb.binding;
 
 class WriteBatch {
   mixin Putable;

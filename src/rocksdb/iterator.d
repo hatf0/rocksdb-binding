@@ -3,30 +3,11 @@ module rocksdb.iterator;
 import std.conv : to;
 import std.string : fromStringz, toStringz;
 
+import rocksdb.binding;
 import rocksdb.slice : Slice;
-import rocksdb.options : ReadOptions, rocksdb_readoptions_t;
-import rocksdb.database : Database, rocksdb_t;
-import rocksdb.columnfamily : ColumnFamily, rocksdb_column_family_handle_t;
-
-extern (C) {
-  struct rocksdb_iterator_t {};
-
-  rocksdb_iterator_t* rocksdb_create_iterator(rocksdb_t*, rocksdb_readoptions_t*);
-  rocksdb_iterator_t* rocksdb_create_iterator_cf(rocksdb_t*, rocksdb_readoptions_t*, rocksdb_column_family_handle_t*);
-
-  void rocksdb_iter_destroy(rocksdb_iterator_t*);
-  ubyte rocksdb_iter_valid(const rocksdb_iterator_t*);
-  void rocksdb_iter_seek_to_first(rocksdb_iterator_t*);
-  void rocksdb_iter_seek_to_last(rocksdb_iterator_t*);
-  void rocksdb_iter_seek(rocksdb_iterator_t*, const char*, size_t);
-  void rocksdb_iter_seek_for_prev(rocksdb_iterator_t*, const char*, size_t);
-  void rocksdb_iter_next(rocksdb_iterator_t*);
-  void rocksdb_iter_prev(rocksdb_iterator_t*);
-  immutable(char*) rocksdb_iter_key(const rocksdb_iterator_t*, size_t*);
-  immutable(char*) rocksdb_iter_value(const rocksdb_iterator_t*, size_t*);
-  void rocksdb_iter_get_error(const rocksdb_iterator_t*, char**);
-}
-
+import rocksdb.options : ReadOptions;
+import rocksdb.database : Database;
+import rocksdb.columnfamily : ColumnFamily;
 
 class Iterator {
   rocksdb_iterator_t* iter;
@@ -83,26 +64,26 @@ class Iterator {
 
   ubyte[] key() {
     size_t size;
-    immutable char* ckey = rocksdb_iter_key(this.iter, &size);
+    const(char)* ckey = rocksdb_iter_key(this.iter, &size);
     return cast(ubyte[])ckey[0..size];
   }
 
   Slice keySlice() {
     size_t size;
-    immutable char* ckey = rocksdb_iter_key(this.iter, &size);
-    return Slice(size, ckey);
+    const(char)* ckey = rocksdb_iter_key(this.iter, &size);
+    return Slice.fromChar(size, ckey);
   }
 
   ubyte[] value() {
     size_t size;
-    immutable char* cvalue = rocksdb_iter_value(this.iter, &size);
+    const(char)* cvalue = rocksdb_iter_value(this.iter, &size);
     return cast(ubyte[])cvalue[0..size];
   }
 
   Slice valueSlice() {
     size_t size;
-    immutable char* cvalue = rocksdb_iter_value(this.iter, &size);
-    return Slice(size, cvalue);
+    const(char)* cvalue = rocksdb_iter_value(this.iter, &size);
+    return Slice.fromChar(size, cvalue);
   }
 
   /*

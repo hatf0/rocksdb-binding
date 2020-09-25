@@ -14,31 +14,8 @@ import rocksdb.batch,
        rocksdb.iterator,
        rocksdb.queryable,
        rocksdb.comparator,
-       rocksdb.columnfamily;
-
-extern (C) {
-  struct rocksdb_t {};
-
-  void rocksdb_put(rocksdb_t*, const rocksdb_writeoptions_t*, const char*, size_t, const char*, size_t, char**);
-  void rocksdb_put_cf(rocksdb_t*, const rocksdb_writeoptions_t*, rocksdb_column_family_handle_t*, const char*, size_t, const char*, size_t, char**);
-
-  char* rocksdb_get(rocksdb_t*, const rocksdb_readoptions_t*, const char*, size_t, size_t*, char**);
-  char* rocksdb_get_cf(rocksdb_t*, const rocksdb_readoptions_t*, rocksdb_column_family_handle_t*, const char*, size_t, size_t*, char**);
-
-  void rocksdb_multi_get(rocksdb_t*, const rocksdb_readoptions_t*, size_t, const char**, const size_t*, char**, size_t*, char**);
-  void rocksdb_multi_get_cf(rocksdb_t*, const rocksdb_readoptions_t*, const rocksdb_column_family_handle_t*, size_t, const char**, const size_t*, char**, size_t*, char**);
-
-  void rocksdb_delete(rocksdb_t*, const rocksdb_writeoptions_t*, const char*, size_t, char**);
-  void rocksdb_delete_cf(rocksdb_t*, const rocksdb_writeoptions_t*, rocksdb_column_family_handle_t*, const char*, size_t, char**);
-
-  void rocksdb_write(rocksdb_t*, const rocksdb_writeoptions_t*, rocksdb_writebatch_t*, char**);
-
-  rocksdb_t* rocksdb_open(const rocksdb_options_t*, const char*, char**);
-  rocksdb_t* rocksdb_open_column_families(const rocksdb_options_t*, const char*, int, const char**, const rocksdb_options_t**, rocksdb_column_family_handle_t**, char**);
-
-  void rocksdb_close(rocksdb_t*);
-
-}
+       rocksdb.columnfamily,
+       rocksdb.binding;
 
 void ensureRocks(char* err) {
   if (err) {
@@ -51,7 +28,7 @@ class Database {
   mixin Putable;
   mixin Removeable;
 
-  rocksdb_t* db;
+  rocksdb.binding.rocksdb_t* db;
 
   DBOptions opts;
   WriteOptions writeOptions;
@@ -248,7 +225,7 @@ class Database {
       rocksdb_multi_get_cf(
         this.db,
         (opts ? opts : this.readOptions).opts,
-        family.cf,
+        cast(const)&family.cf,
         keys.length,
         ckeys.ptr,
         ckeysSizes.ptr,
@@ -293,7 +270,7 @@ class Database {
       rocksdb_multi_get_cf(
         this.db,
         (opts ? opts : this.readOptions).opts,
-        family.cf,
+        cast(const)&family.cf,
         keys.length,
         ckeys.ptr,
         ckeysSizes.ptr,

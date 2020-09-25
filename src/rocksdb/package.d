@@ -1,5 +1,6 @@
 module rocksdb;
 
+public import rocksdb.binding;
 public import rocksdb.batch;
 public import rocksdb.comparator;
 public import rocksdb.database;

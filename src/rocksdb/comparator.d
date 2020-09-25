@@ -1,21 +1,11 @@
 module rocksdb.comparator;
+import rocksdb.binding;
 
 extern (C) {
-  struct rocksdb_comparator_t {};
-
-  rocksdb_comparator_t* rocksdb_comparator_create(
-    void* state,
-    void function(void*),
-    int function(void*, const char* a, size_t alen, const char* b, size_t blen),
-    immutable(char*) function(void*));
-
-  void rocksdb_comparator_destroy(rocksdb_comparator_t*);
-
   alias CmpDestroyF = void function(void*);
   alias CmpCompareF = static int function(void* arg, const char* a, size_t alen, const char* b, size_t blen);
   alias CmpNameF = static immutable(char*) function(void *arg);
 }
-
 
 class Comparator {
   rocksdb_comparator_t* cmp;
