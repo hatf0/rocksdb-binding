@@ -4,3 +4,4 @@ librocksdb*
 .dub/
 test/
 dub.selections.json
+rocksdb.dpp
